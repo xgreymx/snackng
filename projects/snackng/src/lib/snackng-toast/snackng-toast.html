@@ -1,0 +1,35 @@
+@let toast = item();
+
+<!-- No aria-live here: SnackngLiveRegion announces instead. -->
+<div class="sng-accent" aria-hidden="true"></div>
+
+<div class="sng-icon" aria-hidden="true">
+  @if (iconPath(); as path) {
+    <svg viewBox="0 0 24 24" focusable="false">
+      <path [attr.d]="path" fill="currentColor" />
+    </svg>
+  } @else {
+    <span class="sng-icon-custom" [innerHTML]="iconSvg()"></span>
+  }
+</div>
+
+<div class="sng-body">
+  @if (toast.title) {
+    <p class="sng-title">{{ toast.title }}</p>
+  }
+  <p class="sng-message">{{ toast.message }}</p>
+</div>
+
+@if (toast.action; as action) {
+  <button type="button" class="sng-action" (click)="onAction()">{{ action.label }}</button>
+}
+
+@if (toast.dismissible) {
+  <button type="button" class="sng-close" (click)="onDismiss()" aria-label="Close notification">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+        fill="currentColor" />
+    </svg>
+  </button>
+}

@@ -1,0 +1,73 @@
+/* The host spans the viewport but never intercepts clicks; each toast restores
+   pointer-events for itself. Default z-index sits above the CDK overlay range
+   (1000) so a toast is visible over an open dialog. */
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: var(--snackng-z, 2000);
+  pointer-events: none;
+}
+
+.sng-stack {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: var(--snackng-stack-gap, 12px);
+  padding: var(--snackng-stack-padding, 16px);
+  max-width: 100%;
+}
+
+/* Wrapper the FLIP shift is applied to, keeping it off the toast's own
+   enter/exit transform. */
+.sng-slot {
+  display: flex;
+  max-width: 100%;
+}
+
+.sng-stack--top-start,
+.sng-stack--top-center,
+.sng-stack--top-end {
+  top: 0;
+}
+
+/* Full height, not just bottom-anchored: a bottom-anchored auto-height stack
+   grows upward on each add, changing every existing toast's offsetTop and
+   forcing a backdrop-filter re-rasterization (a visible shimmer). Fixed height
+   keeps their offset stable, exactly as top stacks already do. column-reverse
+   still packs from the bottom, newest nearest the edge. */
+.sng-stack--bottom-start,
+.sng-stack--bottom-center,
+.sng-stack--bottom-end {
+  top: 0;
+  bottom: 0;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+}
+
+.sng-stack--top-start,
+.sng-stack--bottom-start {
+  left: 0;
+  align-items: flex-start;
+}
+
+.sng-stack--top-end,
+.sng-stack--bottom-end {
+  right: 0;
+  align-items: flex-end;
+}
+
+.sng-stack--top-center,
+.sng-stack--bottom-center {
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .sng-stack {
+    left: 0;
+    right: 0;
+    transform: none;
+    align-items: stretch;
+  }
+}

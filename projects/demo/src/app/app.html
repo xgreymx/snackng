@@ -1,0 +1,91 @@
+<!-- Decorative colour behind everything, so backdrop-filter has something to
+     blur wherever a toast lands. -->
+<div class="backdrop" aria-hidden="true">
+  <span class="blob blob--a"></span>
+  <span class="blob blob--b"></span>
+  <span class="blob blob--c"></span>
+  <span class="blob blob--d"></span>
+</div>
+
+<main>
+  <header>
+    <h1>snackng</h1>
+    <p>Toasts for Angular. No Material, no CDK, no Tailwind.</p>
+  </header>
+
+  <section>
+    <h2>Position</h2>
+    <div class="row">
+      @for (p of positions; track p) {
+        <button
+          type="button"
+          class="chip"
+          [class.chip--on]="position() === p"
+          (click)="position.set(p)">
+          {{ p }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <section>
+    <h2>Types</h2>
+    <div class="row">
+      <button type="button" (click)="success()">success</button>
+      <button type="button" (click)="warning()">warning</button>
+      <button type="button" (click)="danger()">danger</button>
+      <button type="button" (click)="info()">info</button>
+      <button type="button" (click)="custom()">custom (deploy)</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Behaviour</h2>
+    <div class="row">
+      <button type="button" (click)="withAction()">with action</button>
+      <button type="button" (click)="sticky()">sticky + close</button>
+      <button type="button" (click)="burst()">burst of 10 (max: 4)</button>
+      <button type="button" (click)="dismissAll()">dismiss all</button>
+    </div>
+    <p class="reason">afterDismissed: <code>{{ lastReason() }}</code></p>
+    <p class="reason">
+      Queued waiting for a slot: <code>{{ toast.pending() }}</code>
+    </p>
+  </section>
+
+  <section>
+    <h2>Queue</h2>
+    <p>
+      A burst is not painted all at once. Each toast enters a queue and a consumer releases
+      them one at a time as slots free up (<code>max</code>), spaced by <code>stagger</code> ms.
+      Nothing is lost: the extras appear as visible toasts expire.
+    </p>
+    <pre><code>provideSnackng(&#123;
+  max: 4,                    // visible at once
+  overflow: 'queue',         // or 'dismiss-oldest' so the newest wins
+  stagger: 90,               // ms between releases; 0 = all at once
+&#125;)</code></pre>
+  </section>
+
+  <section>
+    <h2>Animation</h2>
+    <p>
+      Slides in from the edge it is anchored to (400ms) and out in 200ms. Under
+      <code>prefers-reduced-motion: reduce</code> the travel collapses to 0 and only the fade
+      remains — the library never overrides that system setting.
+    </p>
+    <p class="reason">
+      Your system requests reduced motion:
+      <code>{{ prefersReducedMotion() ? 'yes → fade only' : 'no → you will see the slide' }}</code>
+    </p>
+  </section>
+
+  <section>
+    <h2>Theming</h2>
+    <p>Recolour everything from your own CSS with variables, no <code>::ng-deep</code>:</p>
+    <pre><code>:root &#123;
+  --snackng-success-bg: linear-gradient(135deg, #059669, #064e3b);
+  --snackng-radius: 8px;
+&#125;</code></pre>
+  </section>
+</main>

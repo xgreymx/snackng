@@ -1,0 +1,9 @@
+@for (stack of stacks(); track stack.position) {
+  <div class="sng-stack" [class]="'sng-stack--' + stack.position">
+    @for (item of stack.items; track item.id) {
+      <div class="sng-slot" [attr.data-sng-id]="item.id">
+        <sng-toast [item]="item" />
+      </div>
+    }
+  </div>
+}

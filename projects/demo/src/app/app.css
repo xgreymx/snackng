@@ -1,0 +1,156 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 96px;
+}
+
+header {
+  margin-bottom: 40px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+header p {
+  margin: 8px 0 0;
+  color: #94a3b8;
+}
+
+section {
+  margin-bottom: 32px;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+button {
+  padding: 9px 16px;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  background: #1e293b;
+  color: #e2e8f0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #334155;
+}
+
+.chip {
+  font-weight: 500;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+}
+
+.chip--on {
+  border-color: #295ec0;
+  background: #295ec0;
+  color: #fff;
+}
+
+.reason {
+  margin: 12px 0 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: #1e293b;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+}
+
+section p {
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+pre {
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  background: #0b1220;
+  overflow-x: auto;
+}
+
+pre code {
+  padding: 0;
+  background: none;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+/* Colour behind the whole page: backdrop-filter needs something to blur, so a
+   toast docked at any corner has texture underneath it. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+.blob {
+  position: absolute;
+  width: 46vw;
+  height: 46vw;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.5;
+}
+
+.blob--a {
+  top: -12vw;
+  left: -8vw;
+  background: #7c3aed;
+}
+.blob--b {
+  top: -10vw;
+  right: -6vw;
+  background: #db2777;
+}
+.blob--c {
+  bottom: -14vw;
+  left: 12vw;
+  background: #0ea5e9;
+}
+.blob--d {
+  bottom: -10vw;
+  right: -8vw;
+  background: #059669;
+}

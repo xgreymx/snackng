@@ -1,0 +1,39 @@
+{
+  "name": "snackng",
+  "version": "0.1.0",
+  "description": "Toasts for Angular with a glass design, zero UI dependencies and CSS-variable theming. No Material, no CDK, no Tailwind required.",
+  "keywords": [
+    "angular",
+    "toast",
+    "toastr",
+    "snackbar",
+    "notification",
+    "glassmorphism",
+    "a11y"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/xgreymx/snackng#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xgreymx/snackng.git",
+    "directory": "projects/snackng"
+  },
+  "bugs": {
+    "url": "https://github.com/xgreymx/snackng/issues"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/common": ">=21",
+    "@angular/core": ">=21",
+    "@angular/platform-browser": ">=21"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "exports": {
+    "./themes/daisy.css": {
+      "style": "./themes/daisy.css",
+      "default": "./themes/daisy.css"
+    }
+  }
+}

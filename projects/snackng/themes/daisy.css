@@ -1,0 +1,35 @@
+/* snackng — daisyUI bridge (optional)
+   ===================================
+   Import this ONLY if your app uses daisyUI:
+
+     @import "snackng/themes/daisy.css";
+
+   snackng does not depend on daisyUI or Tailwind. Without this file it renders
+   with its own glass defaults. With it, the toast colours are re-pointed at
+   daisyUI's semantic theme variables, so they follow theme switching and dark
+   mode automatically — daisyUI redefines `--color-*` per theme.
+
+   Note this replaces the glass gradients with daisyUI's flat theme colours.
+   To keep the glass look and only borrow daisy's hues, override the individual
+   variables yourself instead of importing this file. */
+
+:root {
+  --snackng-success-bg: var(--color-success);
+  --snackng-success-ink: var(--color-success-content);
+  --snackng-success-solid: var(--color-success);
+
+  --snackng-warning-bg: var(--color-warning);
+  --snackng-warning-ink: var(--color-warning-content);
+  --snackng-warning-solid: var(--color-warning);
+
+  --snackng-danger-bg: var(--color-error);
+  --snackng-danger-ink: var(--color-error-content);
+  --snackng-danger-solid: var(--color-error);
+
+  --snackng-info-bg: var(--color-info);
+  --snackng-info-ink: var(--color-info-content);
+  --snackng-info-solid: var(--color-info);
+
+  --snackng-radius: var(--radius-box);
+  --snackng-font: inherit;
+}

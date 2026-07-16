@@ -1,0 +1,275 @@
+/* Public `--snackng-*` names are only ever READ, with a fallback — never
+   declared on :host. A declaration here would beat the same property inherited
+   from :root and silently break consumer overrides.
+   `--sng-*` are private per-variant aliases. */
+
+:host {
+  --sng-bg: var(--snackng-info-bg, linear-gradient(135deg, rgba(71, 85, 105, 0.9), rgba(40, 51, 69, 0.84)));
+  --sng-ink: var(--snackng-info-ink, #ffffff);
+  --sng-solid: var(--snackng-info-solid, #47556a);
+  /* How far a toast travels on enter/exit. Collapsed to 0 under reduced motion. */
+  --sng-shift: var(--snackng-shift, 28px);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--snackng-gap, 14px);
+  box-sizing: border-box;
+  min-width: var(--snackng-min-width, 340px);
+  max-width: var(--snackng-max-width, 460px);
+  padding: var(--snackng-padding, 14px 18px 14px 22px);
+  overflow: hidden;
+  pointer-events: auto;
+
+  border-radius: var(--snackng-radius, 14px);
+  border: var(--snackng-border, 1px solid rgba(255, 255, 255, 0.22));
+
+  background-image: var(--sng-bg);
+  backdrop-filter: blur(var(--snackng-blur, 16px)) saturate(var(--snackng-saturate, 180%));
+  -webkit-backdrop-filter: blur(var(--snackng-blur, 16px)) saturate(var(--snackng-saturate, 180%));
+  box-shadow: var(
+    --snackng-shadow,
+    0 12px 32px -10px rgba(17, 52, 111, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28)
+  );
+
+  color: var(--sng-ink);
+  font-family: var(--snackng-font, 'Manrope', system-ui, sans-serif);
+  line-height: var(--snackng-line-height, 1.45);
+}
+
+:host(.sng--success) {
+  --sng-bg: var(--snackng-success-bg, linear-gradient(135deg, rgba(33, 80, 159, 0.9), rgba(17, 52, 111, 0.84)));
+  --sng-ink: var(--snackng-success-ink, #ffffff);
+  --sng-solid: var(--snackng-success-solid, #21509f);
+}
+
+:host(.sng--danger) {
+  --sng-bg: var(--snackng-danger-bg, linear-gradient(135deg, rgba(192, 57, 43, 0.9), rgba(140, 35, 29, 0.84)));
+  --sng-ink: var(--snackng-danger-ink, #ffffff);
+  --sng-solid: var(--snackng-danger-solid, #c0392b);
+}
+
+/* Warning is a light surface, so its ink goes dark instead of white. */
+:host(.sng--warning) {
+  --sng-bg: var(--snackng-warning-bg, linear-gradient(135deg, rgba(252, 211, 77, 0.92), rgba(245, 182, 43, 0.9)));
+  --sng-ink: var(--snackng-warning-ink, #4a3200);
+  --sng-solid: var(--snackng-warning-solid, #fcd34d);
+  text-shadow: none;
+}
+
+/* Without backdrop-filter the tint alone reads washed out over busy content. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :host {
+    background-color: var(--sng-solid);
+  }
+}
+
+/* On narrow screens the fixed min-width would overflow the viewport. */
+@media (max-width: 480px) {
+  :host {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+/* Signals the variant without relying on colour alone. */
+.sng-accent {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--snackng-accent-width, 4px);
+  background: color-mix(in srgb, var(--sng-ink) 55%, transparent);
+}
+
+.sng-icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--sng-ink) 16%, transparent);
+  color: var(--sng-ink);
+}
+
+.sng-icon svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.sng-icon-custom {
+  display: flex;
+}
+
+/* [innerHTML] content never gets the _ngcontent attribute, so no scoped
+   selector reaches it. ::ng-deep kept under .sng-icon-custom so it cannot leak.
+   Without it an injected icon renders at the 300x150 default. */
+.sng-icon-custom ::ng-deep svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.sng-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.sng-title {
+  margin: 0;
+  font-size: var(--snackng-title-size, 14px);
+  font-weight: var(--snackng-title-weight, 700);
+  line-height: 1.3;
+  letter-spacing: 0.1px;
+  color: var(--sng-ink);
+}
+
+.sng-message {
+  margin: 0;
+  font-size: var(--snackng-message-size, 13px);
+  font-weight: var(--snackng-message-weight, 400);
+  color: color-mix(in srgb, var(--sng-ink) 85%, transparent);
+}
+
+.sng-action {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border: 1px solid color-mix(in srgb, var(--sng-ink) 32%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--sng-ink) 12%, transparent);
+  color: var(--sng-ink);
+  font: inherit;
+  font-size: var(--snackng-action-size, 13px);
+  font-weight: var(--snackng-action-weight, 600);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.sng-action:hover {
+  background: color-mix(in srgb, var(--sng-ink) 22%, transparent);
+}
+
+.sng-close {
+  flex: 0 0 auto;
+  display: flex;
+  padding: 4px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: color-mix(in srgb, var(--sng-ink) 70%, transparent);
+  cursor: pointer;
+}
+
+.sng-close:hover {
+  background: color-mix(in srgb, var(--sng-ink) 14%, transparent);
+  color: var(--sng-ink);
+}
+
+.sng-close svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.sng-action:focus-visible,
+.sng-close:focus-visible {
+  outline: 2px solid var(--sng-ink);
+  outline-offset: 2px;
+}
+
+/* `animation-name` must stay a literal, never `var(--x)`. Angular rewrites
+   @keyframes names for encapsulation and rewrites literal animation-names to
+   match, but cannot know a custom property holds one — it would point at
+   keyframes that no longer exist and silently do nothing. Same reason reduced
+   motion collapses the distance instead of swapping names. */
+@keyframes sng-in-right {
+  from { opacity: 0; transform: translateX(var(--sng-shift)); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes sng-out-right {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(var(--sng-shift)); }
+}
+@keyframes sng-in-left {
+  from { opacity: 0; transform: translateX(calc(-1 * var(--sng-shift))); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes sng-out-left {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(calc(-1 * var(--sng-shift))); }
+}
+@keyframes sng-in-top {
+  from { opacity: 0; transform: translateY(calc(-1 * var(--sng-shift))); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes sng-out-top {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(calc(-1 * var(--sng-shift))); }
+}
+@keyframes sng-in-bottom {
+  from { opacity: 0; transform: translateY(var(--sng-shift)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes sng-out-bottom {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(var(--sng-shift)); }
+}
+
+:host(.sng-entering) {
+  animation-duration: var(--snackng-enter-duration, 400ms);
+  animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+:host(.sng-leaving) {
+  animation-duration: var(--snackng-exit-duration, 200ms);
+  animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  animation-fill-mode: both;
+}
+
+:host(.sng-at--top-end.sng-entering),
+:host(.sng-at--bottom-end.sng-entering) {
+  animation-name: sng-in-right;
+}
+:host(.sng-at--top-end.sng-leaving),
+:host(.sng-at--bottom-end.sng-leaving) {
+  animation-name: sng-out-right;
+}
+
+:host(.sng-at--top-start.sng-entering),
+:host(.sng-at--bottom-start.sng-entering) {
+  animation-name: sng-in-left;
+}
+:host(.sng-at--top-start.sng-leaving),
+:host(.sng-at--bottom-start.sng-leaving) {
+  animation-name: sng-out-left;
+}
+
+:host(.sng-at--top-center.sng-entering) {
+  animation-name: sng-in-top;
+}
+:host(.sng-at--top-center.sng-leaving) {
+  animation-name: sng-out-top;
+}
+
+:host(.sng-at--bottom-center.sng-entering) {
+  animation-name: sng-in-bottom;
+}
+:host(.sng-at--bottom-center.sng-leaving) {
+  animation-name: sng-out-bottom;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    --sng-shift: 0px;
+    backdrop-filter: blur(var(--snackng-blur-reduced, 10px));
+    -webkit-backdrop-filter: blur(var(--snackng-blur-reduced, 10px));
+  }
+}
