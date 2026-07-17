@@ -1,7 +1,8 @@
 {
   "name": "snackng",
   "version": "0.1.0",
-  "description": "Toasts for Angular with a glass design, zero UI dependencies and CSS-variable theming. No Material, no CDK, no Tailwind required.",
+  "description": "The easiest way to show toasts and snackbars in Angular with a glass design, zero UI dependencies and CSS-variable theming. No Material, no CDK, no Tailwind required.",
+  "author": "xgreymx",
   "keywords": [
     "angular",
     "toast",
@@ -9,7 +10,13 @@
     "snackbar",
     "notification",
     "glassmorphism",
-    "a11y"
+    "a11y",
+    "angular-toast",
+    "angular-snackbar",
+    "angular-notification",
+    "css-variables",
+    "ssr",
+    "standalone"
   ],
   "license": "Apache-2.0",
   "homepage": "https://github.com/xgreymx/snackng#readme",
@@ -20,6 +27,10 @@
   },
   "bugs": {
     "url": "https://github.com/xgreymx/snackng/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/xgreymx"
   },
   "sideEffects": false,
   "peerDependencies": {

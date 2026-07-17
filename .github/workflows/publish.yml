@@ -1,0 +1,72 @@
+# ──────────────────────────────────────────────────────────────
+# Publish snackng to npm when a GitHub Release is created.
+#
+# Uses npm Trusted Publishing (OIDC) — no NPM_TOKEN needed.
+# Setup: link the package to this repo once from npmjs.com.
+# See: https://docs.npmjs.com/generating-provenance-statements
+#
+# Workflow:
+#   1. Bump version in projects/snackng/package.json
+#   2. Commit, tag (e.g. v0.2.0), push
+#   3. Create a GitHub Release from that tag  →  this workflow runs
+# ──────────────────────────────────────────────────────────────
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+# Required for OIDC trusted publishing + provenance attestation
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Build & Publish
+    runs-on: ubuntu-latest
+
+    # ── This environment must match the one configured in npm ──
+    environment: npm
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Node.js ───────────────────────────────────────────
+      # Node 24 LTS ships npm 11.x, which supports OIDC trusted publishing
+      # out of the box — no separate npm upgrade step needed.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # ── Install ───────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── Test ──────────────────────────────────────────────
+      - name: Run library tests
+        run: npm run test:lib -- --watch=false
+
+      # ── Build ─────────────────────────────────────────────
+      - name: Build library (production)
+        run: npm run build:lib
+
+      # ── Version sync ──────────────────────────────────────
+      # The release tag (e.g. "v0.2.0") is the single source of truth.
+      # This step patches the built package.json so npm sees the right version
+      # without requiring a prior manual edit.
+      - name: Sync version from release tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Publishing version: $VERSION"
+          cd dist/snackng
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+
+      # ── Publish (trusted publishing — no token needed) ────
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        working-directory: dist/snackng

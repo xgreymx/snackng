@@ -1,12 +1,28 @@
 {
   "name": "snackng",
   "version": "0.1.0",
+  "description": "The easiest way to show toasts and snackbars in Angular with a glass design, zero UI dependencies and CSS-variable theming. No Material, no CDK, no Tailwind required.",
+  "author": "xgreymx",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/xgreymx/snackng#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xgreymx/snackng.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xgreymx/snackng/issues"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:lib": "ng build snackng --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:lib": "ng test snackng",
+    "version": "node scripts/version.mjs",
+    "publish:lib": "npm run build:lib && cd dist/snackng && npm publish",
+    "publish:lib:dry": "npm run build:lib && cd dist/snackng && npm publish --dry-run"
   },
   "private": true,
   "packageManager": "npm@11.13.0",
