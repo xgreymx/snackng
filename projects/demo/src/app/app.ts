@@ -33,6 +33,59 @@ interface TokenControl {
   readonly unit: (v: number) => string;
 }
 
+const TOKEN_DEFAULTS: readonly TokenControl[] = [
+  {
+    token: '--snackng-tint',
+    label: 'Transparency',
+    min: 30,
+    max: 98,
+    step: 1,
+    value: 86,
+    unit: (v) => `${v}% opaque`,
+  },
+  {
+    token: '--snackng-blur',
+    label: 'Blur',
+    min: 0,
+    max: 30,
+    step: 1,
+    value: 20,
+    unit: (v) => `${v}px`,
+  },
+  {
+    token: '--snackng-spec-strength',
+    label: 'Reflection',
+    min: 0,
+    max: 40,
+    step: 1,
+    value: 15,
+    unit: (v) => (v / 100).toFixed(2),
+  },
+  {
+    token: '--snackng-spec-size',
+    label: 'Reflection size',
+    min: 20,
+    max: 60,
+    step: 1,
+    value: 30,
+    unit: (v) => `${v}%`,
+  },
+  {
+    token: '--snackng-drift-duration',
+    label: 'Drift speed',
+    min: 1,
+    max: 10,
+    step: 1,
+    value: 4,
+    unit: (v) => `${v}s`,
+  },
+];
+
+/** Fresh copy of the defaults, so resetting can restore slider positions. */
+function cloneTokenDefaults(): TokenControl[] {
+  return TOKEN_DEFAULTS.map((c) => ({ ...c }));
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
@@ -53,53 +106,7 @@ export class App {
   );
 
   /** Sliders bound to the real library tokens on :root. */
-  protected readonly tokens = signal<TokenControl[]>([
-    {
-      token: '--snackng-tint',
-      label: 'Transparency',
-      min: 30,
-      max: 98,
-      step: 1,
-      value: 86,
-      unit: (v) => `${v}% opaque`,
-    },
-    {
-      token: '--snackng-blur',
-      label: 'Blur',
-      min: 0,
-      max: 30,
-      step: 1,
-      value: 20,
-      unit: (v) => `${v}px`,
-    },
-    {
-      token: '--snackng-spec-strength',
-      label: 'Reflection',
-      min: 0,
-      max: 40,
-      step: 1,
-      value: 15,
-      unit: (v) => (v / 100).toFixed(2),
-    },
-    {
-      token: '--snackng-spec-size',
-      label: 'Reflection size',
-      min: 20,
-      max: 60,
-      step: 1,
-      value: 30,
-      unit: (v) => `${v}%`,
-    },
-    {
-      token: '--snackng-drift-duration',
-      label: 'Drift speed',
-      min: 1,
-      max: 10,
-      step: 1,
-      value: 4,
-      unit: (v) => `${v}s`,
-    },
-  ]);
+  protected readonly tokens = signal<TokenControl[]>(cloneTokenDefaults());
 
   private toTokenValue(control: TokenControl, raw: number): string {
     switch (control.token) {
@@ -129,6 +136,8 @@ export class App {
     for (const control of this.tokens()) {
       document.documentElement.style.removeProperty(control.token);
     }
+    // Snap the sliders back to their defaults so the reset is visible.
+    this.tokens.set(cloneTokenDefaults());
   }
 
   /** Fires a toast in a given style, honouring the current effect + position. */

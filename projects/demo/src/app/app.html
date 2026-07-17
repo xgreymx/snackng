@@ -74,7 +74,10 @@
       }
     </div>
 
-    <h3>Live tokens <small>(affects all toasts on screen)</small></h3>
+    <h3>
+      Live tokens
+      <small>(global :root overrides — win over presets, like your own CSS would)</small>
+    </h3>
     <div class="sliders">
       @for (c of tokens(); track c.token) {
         <label class="slider">
