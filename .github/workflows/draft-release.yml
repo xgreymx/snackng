@@ -1,0 +1,53 @@
+# ──────────────────────────────────────────────────────────────
+# Create a DRAFT GitHub Release when a version tag is pushed.
+#
+# This does NOT publish to npm. It only prepares a draft release
+# (with auto-generated notes) for you to review. When you publish
+# that release from the GitHub UI, the "Publish to npm" workflow
+# (publish.yml) takes over.
+#
+# Flow:
+#   1. Bump version in projects/snackng/package.json
+#   2. Commit, tag (e.g. v0.2.0), push the tag  →  this workflow runs
+#   3. Review the draft release on GitHub, then publish it
+#   4. publish.yml runs and publishes to npm
+# ──────────────────────────────────────────────────────────────
+name: Draft release on tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Required to create the release
+permissions:
+  contents: write
+
+jobs:
+  draft-release:
+    name: Create draft release
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout (full history so release notes can be generated) ──
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── Create the draft release from the pushed tag ──
+      # Uses the built-in GITHUB_TOKEN and the pre-installed gh CLI.
+      # --generate-notes builds the changelog from commits/PRs.
+      # If a draft for this tag already exists, this step is a no-op.
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "Release for $GITHUB_REF_NAME already exists — skipping."
+            exit 0
+          fi
+          gh release create "$GITHUB_REF_NAME" \
+            --draft \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes
