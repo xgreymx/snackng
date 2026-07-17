@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  NgZone,
   OnDestroy,
   computed,
   effect,
@@ -38,22 +39,38 @@ export class SnackngToast implements OnDestroy {
   private readonly config = inject(SNACKNG_CONFIG);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly zone = inject(NgZone);
 
   private timer?: ReturnType<typeof setTimeout>;
   private exitTimer?: ReturnType<typeof setTimeout>;
   private armed = false;
   private remaining = 0;
   private startedAt = 0;
+  private glareBound = false;
 
   protected readonly hostClasses = computed(() => {
     const item = this.item();
-    return [
+    const classes = [
       'sng-toast',
       `sng--${item.type}`,
       `sng-at--${item.position}`,
+      `sng-style--${item.style}`,
       item.leaving ? 'sng-leaving' : 'sng-entering',
       ...item.panelClass,
-    ].join(' ');
+    ];
+    if (item.effect === 'drift' || item.effect === 'both') {
+      classes.push('sng-fx--drift');
+    }
+    if (item.effect === 'glare' || item.effect === 'both') {
+      classes.push('sng-fx--glare');
+    }
+    return classes.join(' ');
+  });
+
+  /** Whether this toast tracks the pointer for the cursor glare effect. */
+  protected readonly glareEnabled = computed(() => {
+    const fx = this.item().effect;
+    return fx === 'glare' || fx === 'both';
   });
 
   /** Null when the type brings its own SVG; unknown types fall back to `info`. */
@@ -80,7 +97,40 @@ export class SnackngToast implements OnDestroy {
         this.startTimer();
       }
     });
+
+    // Bind pointer tracking once, only if this toast uses the glare effect.
+    effect(() => {
+      if (this.glareEnabled() && !this.glareBound) {
+        this.bindGlare();
+      }
+    });
   }
+
+  /** Writes the cursor position into CSS vars the glare layer reads. Runs
+   *  outside Angular — it only mutates style, no change detection needed. */
+  private bindGlare(): void {
+    this.glareBound = true;
+    const el = this.element.nativeElement;
+    this.zone.runOutsideAngular(() => {
+      el.addEventListener('pointermove', this.onGlareMove);
+      el.addEventListener('pointerleave', this.onGlareLeave);
+    });
+  }
+
+  private readonly onGlareMove = (event: PointerEvent): void => {
+    const el = this.element.nativeElement;
+    const rect = el.getBoundingClientRect();
+    if (!rect.width || !rect.height) {
+      return;
+    }
+    el.style.setProperty('--sng-glare-x', `${((event.clientX - rect.left) / rect.width) * 100}%`);
+    el.style.setProperty('--sng-glare-y', `${((event.clientY - rect.top) / rect.height) * 100}%`);
+    el.style.setProperty('--sng-glare-op', '1');
+  };
+
+  private readonly onGlareLeave = (): void => {
+    this.element.nativeElement.style.setProperty('--sng-glare-op', '0');
+  };
 
   protected onAction(): void {
     const action = this.item().action;
@@ -146,5 +196,10 @@ export class SnackngToast implements OnDestroy {
   ngOnDestroy(): void {
     this.stopTimer();
     clearTimeout(this.exitTimer);
+    if (this.glareBound) {
+      const el = this.element.nativeElement;
+      el.removeEventListener('pointermove', this.onGlareMove);
+      el.removeEventListener('pointerleave', this.onGlareLeave);
+    }
   }
 }

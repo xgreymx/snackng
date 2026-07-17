@@ -6,16 +6,21 @@ export type SnackngBuiltInType = 'success' | 'warning' | 'danger' | 'info';
 export type SnackngType = SnackngBuiltInType | (string & {});
 
 export type SnackngPosition =
-  | 'top-start'
-  | 'top-center'
-  | 'top-end'
-  | 'bottom-start'
-  | 'bottom-center'
-  | 'bottom-end';
+  'top-start' | 'top-center' | 'top-end' | 'bottom-start' | 'bottom-center' | 'bottom-end';
 
 export type SnackngPoliteness = 'polite' | 'assertive' | 'off';
 
 export type SnackngOverflow = 'queue' | 'dismiss-oldest';
+
+/** Built-in glass presets. `(string & {})` keeps autocomplete while allowing a
+ * custom preset defined in CSS via a `.sng-style--<name>` rule. */
+export type SnackngBuiltInStyle =
+  'glass' | 'solid' | 'translucent' | 'transparent' | 'frosted' | 'flat';
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type SnackngStyle = SnackngBuiltInStyle | (string & {});
+
+/** Idle/interactive light effect on the glass surface. */
+export type SnackngEffect = 'none' | 'drift' | 'glare' | 'both';
 
 /** `'replaced'` means the toast was evicted under `overflow: 'dismiss-oldest'`. */
 export type SnackngDismissReason = 'timeout' | 'action' | 'manual' | 'replaced';
@@ -52,6 +57,10 @@ export interface SnackngOptions {
   dismissible?: boolean;
   /** Overrides the politeness derived from the type. */
   politeness?: SnackngPoliteness;
+  /** Glass preset for this toast. Overrides the global `style`. Defaults to `'glass'`. */
+  style?: SnackngStyle;
+  /** Surface light effect for this toast. Overrides the global `effect`. Defaults to `'drift'`. */
+  effect?: SnackngEffect;
   panelClass?: string | string[];
 }
 

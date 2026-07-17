@@ -19,6 +19,7 @@ import {
   SnackngOptions,
   SnackngPoliteness,
   SnackngRef,
+  SnackngStyle,
   SnackngType,
 } from './snackng.model';
 
@@ -27,6 +28,22 @@ const NOOP_REF: SnackngRef = {
   dismiss: () => {},
   afterDismissed: Promise.resolve<SnackngDismissReason>('manual'),
 };
+
+/**
+ * A variant shortcut (`success`, `danger`, …). Callable directly, and also
+ * carries a method per built-in glass preset so you can pick a look inline:
+ * `snackng.success.solid('Saved')` is sugar for
+ * `snackng.success('Saved', { style: 'solid' })`.
+ */
+export interface SnackngVariantFn {
+  (message: string, options?: SnackngOptions): SnackngRef;
+  glass(message: string, options?: SnackngOptions): SnackngRef;
+  solid(message: string, options?: SnackngOptions): SnackngRef;
+  translucent(message: string, options?: SnackngOptions): SnackngRef;
+  transparent(message: string, options?: SnackngOptions): SnackngRef;
+  frosted(message: string, options?: SnackngOptions): SnackngRef;
+  flat(message: string, options?: SnackngOptions): SnackngRef;
+}
 
 @Injectable({ providedIn: 'root' })
 export class SnackngService implements OnDestroy {
@@ -46,20 +63,27 @@ export class SnackngService implements OnDestroy {
    */
   readonly pending = this.store.pending;
 
-  success(message: string, options?: SnackngOptions): SnackngRef {
-    return this.show('success', message, options);
-  }
+  /** Callable shortcut with per-preset sugar, e.g. `success.solid('Saved')`. */
+  readonly success = this.variant('success');
+  readonly warning = this.variant('warning');
+  readonly danger = this.variant('danger');
+  readonly info = this.variant('info');
 
-  warning(message: string, options?: SnackngOptions): SnackngRef {
-    return this.show('warning', message, options);
-  }
+  /** Builds a callable variant carrying a method per built-in preset. */
+  private variant(type: SnackngType): SnackngVariantFn {
+    const withStyle =
+      (style?: SnackngStyle) =>
+      (message: string, options?: SnackngOptions): SnackngRef =>
+        this.show(type, message, style ? { ...options, style } : options);
 
-  danger(message: string, options?: SnackngOptions): SnackngRef {
-    return this.show('danger', message, options);
-  }
-
-  info(message: string, options?: SnackngOptions): SnackngRef {
-    return this.show('info', message, options);
+    return Object.assign(withStyle(), {
+      glass: withStyle('glass'),
+      solid: withStyle('solid'),
+      translucent: withStyle('translucent'),
+      transparent: withStyle('transparent'),
+      frosted: withStyle('frosted'),
+      flat: withStyle('flat'),
+    });
   }
 
   show(type: SnackngType, message: string, options: SnackngOptions = {}): SnackngRef {
@@ -79,6 +103,8 @@ export class SnackngService implements OnDestroy {
       position: options.position ?? this.config.position,
       dismissible: options.dismissible ?? this.config.dismissible,
       action: options.action,
+      style: options.style ?? this.config.style,
+      effect: options.effect ?? this.config.effect,
       panelClass: normalizeClasses(options.panelClass),
       politeness,
     });

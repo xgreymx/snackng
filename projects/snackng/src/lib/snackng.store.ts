@@ -3,8 +3,10 @@ import { SNACKNG_CONFIG } from './snackng.config';
 import {
   SnackngAction,
   SnackngDismissReason,
+  SnackngEffect,
   SnackngPoliteness,
   SnackngPosition,
+  SnackngStyle,
   SnackngType,
 } from './snackng.model';
 
@@ -17,6 +19,8 @@ export interface SnackngItem {
   readonly position: SnackngPosition;
   readonly dismissible: boolean;
   readonly action?: SnackngAction;
+  readonly style: SnackngStyle;
+  readonly effect: SnackngEffect;
   readonly panelClass: readonly string[];
   readonly politeness: SnackngPoliteness;
   /** Set while the exit animation runs; the item is still in the DOM. */
@@ -67,11 +71,11 @@ export class SnackngStore implements OnDestroy {
     afterDismissed: Promise<SnackngDismissReason>;
   } {
     const id = `sng-${++this.counter}`;
-    const afterDismissed = new Promise<SnackngDismissReason>(resolve =>
+    const afterDismissed = new Promise<SnackngDismissReason>((resolve) =>
       this.resolvers.set(id, resolve),
     );
 
-    this.queue.update(queue => [...queue, { ...item, id, leaving: false }]);
+    this.queue.update((queue) => [...queue, { ...item, id, leaving: false }]);
     this.pump();
 
     return { id, afterDismissed };
@@ -82,18 +86,18 @@ export class SnackngStore implements OnDestroy {
    * still queued is dropped outright, having never been shown.
    */
   dismiss(id: string, reason: SnackngDismissReason = 'manual'): void {
-    if (this.queue().some(item => item.id === id)) {
-      this.queue.update(queue => queue.filter(item => item.id !== id));
+    if (this.queue().some((item) => item.id === id)) {
+      this.queue.update((queue) => queue.filter((item) => item.id !== id));
       this.resolve(id, reason);
       return;
     }
 
-    const target = this.items().find(item => item.id === id);
+    const target = this.items().find((item) => item.id === id);
     if (!target || target.leaving) {
       return;
     }
     this.reasons.set(id, reason);
-    this.items.update(items => items.map(i => (i.id === id ? { ...i, leaving: true } : i)));
+    this.items.update((items) => items.map((i) => (i.id === id ? { ...i, leaving: true } : i)));
   }
 
   /** Removes the item and resolves its `afterDismissed` promise. */
@@ -101,7 +105,7 @@ export class SnackngStore implements OnDestroy {
     if (!this.resolvers.has(id)) {
       return;
     }
-    this.items.update(items => items.filter(item => item.id !== id));
+    this.items.update((items) => items.filter((item) => item.id !== id));
     this.resolve(id, this.reasons.get(id) ?? 'manual');
     this.reasons.delete(id);
     this.pump();
@@ -135,7 +139,7 @@ export class SnackngStore implements OnDestroy {
       if (onScreen.length >= this.config.max) {
         if (this.config.overflow === 'dismiss-oldest') {
           // Evicting an already-leaving toast frees nothing.
-          const victim = onScreen.find(item => !item.leaving);
+          const victim = onScreen.find((item) => !item.leaving);
           if (victim) {
             this.dismiss(victim.id, 'replaced');
           }
@@ -156,7 +160,7 @@ export class SnackngStore implements OnDestroy {
 
       const [next, ...rest] = this.queue();
       this.queue.set(rest);
-      this.items.update(items => [...items, next]);
+      this.items.update((items) => [...items, next]);
       this.lastReleaseAt = Date.now();
     }
   }

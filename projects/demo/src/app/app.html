@@ -21,7 +21,8 @@
           type="button"
           class="chip"
           [class.chip--on]="position() === p"
-          (click)="position.set(p)">
+          (click)="position.set(p)"
+        >
           {{ p }}
         </button>
       }
@@ -40,6 +41,64 @@
   </section>
 
   <section>
+    <h2>Glass playground</h2>
+    <p>
+      Every control below drives the <em>real</em> library — the presets and
+      <code>--snackng-*</code> tokens a consumer would use. Pick a preset, an effect, then fire a
+      toast. On <code>glare</code> / <code>both</code>, hover over the toast.
+    </p>
+
+    <h3>Style presets</h3>
+    <div class="row">
+      @for (s of styles; track s) {
+        <button type="button" (click)="showStyle(s)">{{ s }}</button>
+      }
+    </div>
+    <p class="reason">
+      Global default via <code>provideSnackng(&#123; style: 'solid' &#125;)</code> · per call
+      <code>toast.success('ok', &#123; style: 'solid' &#125;)</code> · chained
+      <code>toast.success.solid('ok')</code>.
+    </p>
+
+    <h3>Surface effect</h3>
+    <div class="row">
+      @for (e of effects; track e) {
+        <button
+          type="button"
+          class="chip"
+          [class.chip--on]="effect() === e"
+          (click)="effect.set(e)"
+        >
+          {{ e }}
+        </button>
+      }
+    </div>
+
+    <h3>Live tokens <small>(affects all toasts on screen)</small></h3>
+    <div class="sliders">
+      @for (c of tokens(); track c.token) {
+        <label class="slider">
+          <span class="slider-label"
+            >{{ c.label }} <b>{{ c.unit(c.value) }}</b></span
+          >
+          <input
+            type="range"
+            [min]="c.min"
+            [max]="c.max"
+            [step]="c.step"
+            [value]="c.value"
+            (input)="onToken(c, $event)"
+          />
+          <code>{{ c.token }}</code>
+        </label>
+      }
+    </div>
+    <div class="row">
+      <button type="button" (click)="resetTokens()">reset tokens</button>
+    </div>
+  </section>
+
+  <section>
     <h2>Behaviour</h2>
     <div class="row">
       <button type="button" (click)="withAction()">with action</button>
@@ -47,7 +106,9 @@
       <button type="button" (click)="burst()">burst of 10 (max: 4)</button>
       <button type="button" (click)="dismissAll()">dismiss all</button>
     </div>
-    <p class="reason">afterDismissed: <code>{{ lastReason() }}</code></p>
+    <p class="reason">
+      afterDismissed: <code>{{ lastReason() }}</code>
+    </p>
     <p class="reason">
       Queued waiting for a slot: <code>{{ toast.pending() }}</code>
     </p>
@@ -56,9 +117,9 @@
   <section>
     <h2>Queue</h2>
     <p>
-      A burst is not painted all at once. Each toast enters a queue and a consumer releases
-      them one at a time as slots free up (<code>max</code>), spaced by <code>stagger</code> ms.
-      Nothing is lost: the extras appear as visible toasts expire.
+      A burst is not painted all at once. Each toast enters a queue and a consumer releases them one
+      at a time as slots free up (<code>max</code>), spaced by <code>stagger</code> ms. Nothing is
+      lost: the extras appear as visible toasts expire.
     </p>
     <pre><code>provideSnackng(&#123;
   max: 4,                    // visible at once

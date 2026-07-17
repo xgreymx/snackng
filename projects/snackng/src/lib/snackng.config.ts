@@ -1,5 +1,11 @@
 import { InjectionToken, EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
-import { SnackngOverflow, SnackngPosition, SnackngTypeDef } from './snackng.model';
+import {
+  SnackngEffect,
+  SnackngOverflow,
+  SnackngPosition,
+  SnackngStyle,
+  SnackngTypeDef,
+} from './snackng.model';
 
 export interface SnackngConfig {
   duration: number;
@@ -21,6 +27,10 @@ export interface SnackngConfig {
   stagger: number;
   pauseOnHover: boolean;
   dismissible: boolean;
+  /** Default glass preset for every toast. Overridable per call via `options.style`. */
+  style: SnackngStyle;
+  /** Default surface light effect. Overridable per call via `options.effect`. */
+  effect: SnackngEffect;
   types: Record<string, SnackngTypeDef>;
 }
 
@@ -32,6 +42,8 @@ export const SNACKNG_DEFAULTS: SnackngConfig = {
   stagger: 90,
   pauseOnHover: true,
   dismissible: false,
+  style: 'glass',
+  effect: 'drift',
   types: {},
 };
 

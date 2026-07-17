@@ -23,7 +23,7 @@ function toasts(): HTMLElement[] {
 }
 
 function messages(): string[] {
-  return Array.from(document.querySelectorAll('.sng-message')).map(n => n.textContent ?? '');
+  return Array.from(document.querySelectorAll('.sng-message')).map((n) => n.textContent ?? '');
 }
 
 describe('SnackngService', () => {
@@ -34,7 +34,7 @@ describe('SnackngService', () => {
   afterEach(() => {
     vi.useRealTimers();
     TestBed.resetTestingModule();
-    document.querySelectorAll('sng-host, .sng-live-region').forEach(node => node.remove());
+    document.querySelectorAll('sng-host, .sng-live-region').forEach((node) => node.remove());
   });
 
   it('renders a toast into the document without any global stylesheet', () => {
@@ -396,6 +396,72 @@ describe('SnackngService', () => {
 
     expect(toasts()[0].classList.contains('tema-morado')).toBe(true);
     expect(toasts()[0].classList.contains('compacto')).toBe(true);
+  });
+
+  it('applies the default glass preset and drift effect', () => {
+    const { service, tick } = setup({ duration: 0 });
+
+    service.info('por defecto');
+    tick();
+
+    const el = toasts()[0];
+    expect(el.classList.contains('sng-style--glass')).toBe(true);
+    expect(el.classList.contains('sng-fx--drift')).toBe(true);
+    expect(el.classList.contains('sng-fx--glare')).toBe(false);
+  });
+
+  it('applies a per-call style preset as a class', () => {
+    const { service, tick } = setup({ duration: 0 });
+
+    service.info('solido', { style: 'solid' });
+    tick();
+
+    expect(toasts()[0].classList.contains('sng-style--solid')).toBe(true);
+    expect(toasts()[0].classList.contains('sng-style--glass')).toBe(false);
+  });
+
+  it('supports the chained preset sugar (success.solid)', () => {
+    const { service, tick } = setup({ duration: 0 });
+
+    service.success.solid('guardado');
+    tick();
+
+    const el = toasts()[0];
+    expect(el.classList.contains('sng--success')).toBe(true);
+    expect(el.classList.contains('sng-style--solid')).toBe(true);
+  });
+
+  it('takes the global style and effect defaults from provideSnackng', () => {
+    const { service, tick } = setup({ duration: 0, style: 'flat', effect: 'none' });
+
+    service.info('global');
+    tick();
+
+    const el = toasts()[0];
+    expect(el.classList.contains('sng-style--flat')).toBe(true);
+    expect(el.classList.contains('sng-fx--drift')).toBe(false);
+    expect(el.classList.contains('sng-fx--glare')).toBe(false);
+  });
+
+  it('renders the glare layer and both fx classes for effect: both', () => {
+    const { service, tick } = setup({ duration: 0 });
+
+    service.info('reactivo', { effect: 'both' });
+    tick();
+
+    const el = toasts()[0];
+    expect(el.classList.contains('sng-fx--drift')).toBe(true);
+    expect(el.classList.contains('sng-fx--glare')).toBe(true);
+    expect(el.querySelector('.sng-glare')).not.toBeNull();
+  });
+
+  it('omits the glare layer when the effect does not use it', () => {
+    const { service, tick } = setup({ duration: 0, effect: 'drift' });
+
+    service.info('sin glare');
+    tick();
+
+    expect(toasts()[0].querySelector('.sng-glare')).toBeNull();
   });
 });
 
