@@ -1,3 +1,5 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/xgreymx/snackng)
+
 # snackng
 
 Toasts for Angular with a glass design, **zero UI dependencies** and CSS-variable theming.
