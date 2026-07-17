@@ -1,6 +1,6 @@
 {
   "name": "snackng",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The easiest way to show toasts and snackbars in Angular with a glass design, zero UI dependencies and CSS-variable theming. No Material, no CDK, no Tailwind required.",
   "author": "xgreymx",
   "license": "Apache-2.0",
