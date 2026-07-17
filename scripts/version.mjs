@@ -71,6 +71,6 @@ for (const file of FILES) {
 console.log(`\n  ${current}  ->  ${next}   (updated ${FILES.length} package.json files)\n`);
 console.log('  Next steps to release:');
 console.log(`    git commit -am "${next}"`);
-console.log(`    git tag v${next}`);
+console.log(`    git tag -a v${next} -m "v${next}"`);
 console.log('    git push --follow-tags');
 console.log('    # then create a GitHub Release from the tag to trigger publish.yml\n');
