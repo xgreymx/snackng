@@ -1,3 +1,5 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/xgreymx/snackng)
+
 # snackng
 
 Toasts for Angular with a glass design, **zero UI dependencies** and CSS-variable theming.
@@ -20,7 +22,7 @@ no theme tokens to define.
 import { Component, inject } from '@angular/core';
 import { SnackngService } from 'snackng';
 
-@Component({ /* … */ })
+@Component({/* … */})
 export class SyncPage {
   private readonly toast = inject(SnackngService);
 
@@ -50,8 +52,8 @@ this.toast.info('Import running…', { title: 'In progress', duration: 0, dismis
 const ref = this.toast.success('Movement deleted.', {
   action: { label: 'Undo', handler: () => this.restore() },
 });
-ref.afterDismissed.then(reason => {}); // 'timeout' | 'action' | 'manual' | 'replaced'
-ref.dismiss();                          // close it yourself
+ref.afterDismissed.then((reason) => {}); // 'timeout' | 'action' | 'manual' | 'replaced'
+ref.dismiss(); // close it yourself
 
 // Somewhere other than the top-right.
 this.toast.info('Down here.', { position: 'bottom-center' });
@@ -77,15 +79,15 @@ its internal MDC surface with `!important` — or ship Tailwind classes that ren
 markup unless the consuming app happens to run the same CSS pipeline. snackng ships **compiled,
 encapsulated CSS** and owns its own overlay, so it has neither problem.
 
-| | snackng |
-|---|---|
-| Peer dependencies | `@angular/core`, `@angular/common`, `@angular/platform-browser` |
-| Global CSS you must add | none |
-| Stacks multiple toasts | yes (`MatSnackBar` shows one at a time) |
-| Handles bursts | queued and staggered, never dropped |
-| SSR | safe — no-ops on the server |
-| Respects `prefers-reduced-motion` | yes |
-| Angular | 21 and up |
+|                                   | snackng                                                         |
+| --------------------------------- | --------------------------------------------------------------- |
+| Peer dependencies                 | `@angular/core`, `@angular/common`, `@angular/platform-browser` |
+| Global CSS you must add           | none                                                            |
+| Stacks multiple toasts            | yes (`MatSnackBar` shows one at a time)                         |
+| Handles bursts                    | queued and staggered, never dropped                             |
+| SSR                               | safe — no-ops on the server                                     |
+| Respects `prefers-reduced-motion` | yes                                                             |
+| Angular                           | 21 and up                                                       |
 
 ## API
 
@@ -106,21 +108,58 @@ const ref = toast.success('Item deleted', {
   action: { label: 'Undo', handler: () => restore() },
 });
 
-ref.afterDismissed.then(reason => console.log(reason)); // 'timeout' | 'action' | 'manual' | 'replaced'
+ref.afterDismissed.then((reason) => console.log(reason)); // 'timeout' | 'action' | 'manual' | 'replaced'
 ref.dismiss();
 ```
 
 ### Options
 
-| Option | Type | Default | |
-|---|---|---|---|
-| `title` | `string` | — | Bold line above the message |
-| `duration` | `number` | `5000` | ms before auto-dismiss; `0` keeps it open |
-| `action` | `{ label, handler?, dismissOnClick? }` | — | Snackbar-style button |
-| `position` | `SnackngPosition` | `'top-end'` | `top`/`bottom` × `start`/`center`/`end` |
-| `dismissible` | `boolean` | `false` | Show the close button |
-| `politeness` | `'polite' \| 'assertive' \| 'off'` | by type | Screen-reader urgency |
-| `panelClass` | `string \| string[]` | — | Extra classes on the toast element |
+| Option        | Type                                   | Default     |                                           |
+| ------------- | -------------------------------------- | ----------- | ----------------------------------------- |
+| `title`       | `string`                               | —           | Bold line above the message               |
+| `duration`    | `number`                               | `5000`      | ms before auto-dismiss; `0` keeps it open |
+| `action`      | `{ label, handler?, dismissOnClick? }` | —           | Snackbar-style button                     |
+| `position`    | `SnackngPosition`                      | `'top-end'` | `top`/`bottom` × `start`/`center`/`end`   |
+| `dismissible` | `boolean`                              | `false`     | Show the close button                     |
+| `politeness`  | `'polite' \| 'assertive' \| 'off'`     | by type     | Screen-reader urgency                     |
+| `style`       | `SnackngStyle`                         | `'glass'`   | Glass preset — see below                  |
+| `effect`      | `SnackngEffect`                        | `'drift'`   | Surface light effect — see below          |
+| `panelClass`  | `string \| string[]`                   | —           | Extra classes on the toast element        |
+
+### Glass presets & surface effects
+
+Don't want to hand-tune opacity and blur to get a look? Pick a **preset**. Each is a bundle of
+glass settings, applied per call, globally, or via a chained shortcut — all three are equivalent:
+
+```ts
+toast.success('Saved', { style: 'solid' }); // per call
+toast.success.solid('Saved'); // chained sugar (built-in types)
+provideSnackng({ style: 'solid' }); // global default for every toast
+```
+
+| `style`               | Look                                                                             |
+| --------------------- | -------------------------------------------------------------------------------- |
+| `'glass'` _(default)_ | Rich translucent glass with depth                                                |
+| `'solid'`             | Nearly opaque, a whisper of glass                                                |
+| `'translucent'`       | More of the background shows through                                             |
+| `'transparent'`       | Barely-there tint, very see-through                                              |
+| `'frosted'`           | Heavy blur, high tint — classic frosted glass                                    |
+| `'flat'`              | Fully opaque, no blur — flat design, and the cleanest `backdrop-filter` fallback |
+
+Define your own by dropping a `.sng-style--<name>` rule in your CSS (setting `--sng-p-*`
+private aliases) and passing `{ style: '<name>' }`.
+
+`effect` adds subtle motion/light to the glass surface — it never touches the enter/exit
+animations:
+
+| `effect`              | Behaviour                                           |
+| --------------------- | --------------------------------------------------- |
+| `'drift'` _(default)_ | A slow specular highlight drifts across the surface |
+| `'glare'`             | The highlight follows the pointer (hover)           |
+| `'both'`              | Drift when idle, glare on hover                     |
+| `'none'`              | Static glass, no light motion                       |
+
+Both `drift` and the drift half of `both` stop under `prefers-reduced-motion: reduce`.
 
 ### Global defaults
 
@@ -132,13 +171,15 @@ import { provideSnackng } from 'snackng';
 bootstrapApplication(App, {
   providers: [
     provideSnackng({
-      duration: 4000,           // ms; 0 = stay until dismissed
+      duration: 4000, // ms; 0 = stay until dismissed
       position: 'bottom-end',
-      max: 5,                   // visible at once
-      overflow: 'queue',        // 'queue' | 'dismiss-oldest'
-      stagger: 90,              // ms between releases; 0 = all at once
+      max: 5, // visible at once
+      overflow: 'queue', // 'queue' | 'dismiss-oldest'
+      stagger: 90, // ms between releases; 0 = all at once
       pauseOnHover: true,
       dismissible: false,
+      style: 'glass', // default glass preset for every toast
+      effect: 'drift', // 'drift' | 'glare' | 'both' | 'none'
       types: {
         deploy: { icon: '<svg viewBox="0 0 24 24"><path d="..."/></svg>' },
       },
@@ -190,27 +231,31 @@ variables anywhere they inherit to the toast (`:root` is simplest).
 }
 ```
 
-| Variable | Default |
-|---|---|
-| `--snackng-{type}-bg` | glass gradient per type |
-| `--snackng-{type}-ink` | `#ffffff` (`#4a3200` for `warning`) |
-| `--snackng-{type}-solid` | opaque fallback where `backdrop-filter` is unsupported |
-| `--snackng-radius` | `14px` |
-| `--snackng-blur` | `16px` |
-| `--snackng-saturate` | `180%` |
-| `--snackng-border` | `1px solid rgba(255,255,255,.22)` |
-| `--snackng-shadow` | layered drop + inner highlight |
-| `--snackng-min-width` / `--snackng-max-width` | `340px` / `460px` |
-| `--snackng-padding` | `14px 18px 14px 22px` |
-| `--snackng-gap` | `14px` |
-| `--snackng-accent-width` | `4px` |
-| `--snackng-font` | `'Manrope', system-ui, sans-serif` |
-| `--snackng-title-size` / `--snackng-title-weight` | `14px` / `700` |
-| `--snackng-message-size` / `--snackng-message-weight` | `13px` / `400` |
-| `--snackng-line-height` | `1.45` |
-| `--snackng-enter-duration` / `--snackng-exit-duration` | `400ms` / `200ms` |
-| `--snackng-z` | `2000` |
-| `--snackng-stack-gap` / `--snackng-stack-padding` | `12px` / `16px` |
+| Variable                                               | Default                                                |
+| ------------------------------------------------------ | ------------------------------------------------------ |
+| `--snackng-{type}-bg`                                  | glass gradient per type                                |
+| `--snackng-{type}-ink`                                 | `#ffffff`                                              |
+| `--snackng-{type}-solid`                               | opaque fallback where `backdrop-filter` is unsupported |
+| `--snackng-tint`                                       | `0.86` — tint opacity (how much shows through)         |
+| `--snackng-radius`                                     | `14px`                                                 |
+| `--snackng-blur`                                       | `20px`                                                 |
+| `--snackng-saturate`                                   | `180%`                                                 |
+| `--snackng-brightness`                                 | `1.06`                                                 |
+| `--snackng-gloss`                                      | `0.22` — static highlight strength                     |
+| `--snackng-spec-strength` / `--snackng-spec-size`      | `0.15` / `30%` — drift & glare reflection              |
+| `--snackng-drift-duration`                             | `4s`                                                   |
+| `--snackng-border`                                     | `1px solid rgba(255,255,255,.22)`                      |
+| `--snackng-shadow`                                     | layered drop + inner highlight                         |
+| `--snackng-min-width` / `--snackng-max-width`          | `340px` / `460px`                                      |
+| `--snackng-padding`                                    | `14px 18px`                                            |
+| `--snackng-gap`                                        | `14px`                                                 |
+| `--snackng-font`                                       | `'Manrope', system-ui, sans-serif`                     |
+| `--snackng-title-size` / `--snackng-title-weight`      | `14px` / `700`                                         |
+| `--snackng-message-size` / `--snackng-message-weight`  | `13px` / `400`                                         |
+| `--snackng-line-height`                                | `1.45`                                                 |
+| `--snackng-enter-duration` / `--snackng-exit-duration` | `400ms` / `200ms`                                      |
+| `--snackng-z`                                          | `2000`                                                 |
+| `--snackng-stack-gap` / `--snackng-stack-padding`      | `12px` / `16px`                                        |
 
 `{type}` is `success`, `warning`, `danger`, `info`, or any custom type you register.
 
@@ -220,7 +265,7 @@ snackng does **not** depend on daisyUI or Tailwind. If you happen to use them, o
 re-points the toast at your daisy theme, so it follows theme switching and dark mode for free:
 
 ```css
-@import "snackng/themes/daisy.css";
+@import 'snackng/themes/daisy.css';
 ```
 
 That maps `--snackng-*` onto daisyUI's `--color-success`, `--color-error-content`, `--radius-box`
