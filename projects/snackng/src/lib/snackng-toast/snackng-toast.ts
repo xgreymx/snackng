@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { SNACKNG_CONFIG } from '../snackng.config';
-import { SNACKNG_CLOSE_ICON, SNACKNG_ICONS } from '../icons';
+import { SNACKNG_ICONS } from '../icons';
 import { SnackngBuiltInType } from '../snackng.model';
 import { SnackngItem, SnackngStore } from '../snackng.store';
 
@@ -80,10 +80,6 @@ export class SnackngToast implements OnDestroy {
       return null;
     }
     return SNACKNG_ICONS[type as SnackngBuiltInType] ?? SNACKNG_ICONS.info;
-  });
-
-  protected readonly closeIconPath = computed<string | null>(() => {
-    return SNACKNG_CLOSE_ICON;
   });
 
   /** Custom types may supply raw SVG markup, trusted as authored config. */

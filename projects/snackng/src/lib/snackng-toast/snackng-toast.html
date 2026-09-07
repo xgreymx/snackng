@@ -16,20 +16,9 @@
 </div>
 
 <div class="sng-body">
-  <div class="sng-header">
-    @if (toast.title) {
-      <p class="sng-title">{{ toast.title }}</p>
-    }
-
-    @if (closeIconPath(); as closePath) {
-      <div class="sng-close-icon" (click)="onDismiss()">
-        <svg viewBox="0 0 24 24" focusable="false">
-          <path [attr.d]="closePath" fill="currentColor" />
-        </svg>
-      </div>
-    }
-  </div>
-
+  @if (toast.title) {
+    <p class="sng-title">{{ toast.title }}</p>
+  }
   <p class="sng-message">{{ toast.message }}</p>
 </div>
 
