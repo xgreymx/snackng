@@ -41,7 +41,7 @@ export const SNACKNG_DEFAULTS: SnackngConfig = {
   overflow: 'queue',
   stagger: 90,
   pauseOnHover: true,
-  dismissible: false,
+  dismissible: true,
   style: 'glass',
   effect: 'drift',
   types: {},

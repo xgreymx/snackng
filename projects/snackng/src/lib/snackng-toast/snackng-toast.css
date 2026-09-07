@@ -241,41 +241,7 @@
   opacity: var(--sng-glare-op, 0);
 }
 
- .sng-close-icon {                                                                                                                                                                                               
-    flex: 0 0 auto;                                                                                                                                                                                               
-    display: flex;                                                                                                                                                                                                
-    align-items: center;                                                                                                                                                                                          
-    justify-content: center;                                                                                                                                                                                      
-    padding: 4px;                                                                                                                                                                                                 
-    border-radius: 8px;                                                                                                                                                                                           
-    border: 0;                                                                                                                                                                                                    
-    background: transparent;                                                                                                                                                                                      
-    color: color-mix(in srgb, var(--sng-ink) 70%, transparent);                                                                                                                                                   
-    cursor: pointer;
-    
-    transition: 
-      background-color 0.15s ease,
-      color 0.15s ease,
-      transform 0.1s ease;
-  }
-  
-  .sng-close-icon:hover {
-    background: color-mix(in srgb, var(--sng-ink) 12%, transparent);
-    color: var(--sng-ink);
-  }
-  
-  .sng-close-icon:active {
-    background: color-mix(in srgb, var(--sng-ink) 22%, transparent);
-    transform: scale(0.92);
-  }
 
-
-.sng-close-icon svg {
-  display: block;
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-}
 
 .sng-icon {
   flex: 0 0 auto;
@@ -317,13 +283,6 @@
   flex: 1 1 auto;
 }
 
-.sng-header{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items:center ;
-}
-
 .sng-title {
   margin: 0;
   font-size: var(--snackng-title-size, 14px);
@@ -361,23 +320,37 @@
 .sng-close {
   flex: 0 0 auto;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  margin-top: -2px;
   padding: 4px;
   border: 0;
-  border-radius: 6px;
-  background: none;
+  border-radius: 8px;
+  background: transparent;
   color: color-mix(in srgb, var(--sng-ink) 70%, transparent);
   cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
 }
 
 .sng-close:hover {
-  background: color-mix(in srgb, var(--sng-ink) 14%, transparent);
+  background: color-mix(in srgb, var(--sng-ink) 12%, transparent);
   color: var(--sng-ink);
+}
+
+.sng-close:active {
+  background: color-mix(in srgb, var(--sng-ink) 22%, transparent);
+  transform: scale(0.92);
 }
 
 .sng-close svg {
   display: block;
   width: 18px;
   height: 18px;
+  fill: currentColor;
 }
 
 .sng-action:focus-visible,

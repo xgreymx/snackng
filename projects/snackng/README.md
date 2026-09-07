@@ -120,7 +120,7 @@ ref.dismiss();
 | `duration`    | `number`                               | `5000`      | ms before auto-dismiss; `0` keeps it open |
 | `action`      | `{ label, handler?, dismissOnClick? }` | —           | Snackbar-style button                     |
 | `position`    | `SnackngPosition`                      | `'top-end'` | `top`/`bottom` × `start`/`center`/`end`   |
-| `dismissible` | `boolean`                              | `false`     | Show the close button                     |
+| `dismissible` | `boolean`                              | `true`      | Show the close button                     |
 | `politeness`  | `'polite' \| 'assertive' \| 'off'`     | by type     | Screen-reader urgency                     |
 | `style`       | `SnackngStyle`                         | `'glass'`   | Glass preset — see below                  |
 | `effect`      | `SnackngEffect`                        | `'drift'`   | Surface light effect — see below          |
@@ -177,7 +177,7 @@ bootstrapApplication(App, {
       overflow: 'queue', // 'queue' | 'dismiss-oldest'
       stagger: 90, // ms between releases; 0 = all at once
       pauseOnHover: true,
-      dismissible: false,
+      dismissible: true,
       style: 'glass', // default glass preset for every toast
       effect: 'drift', // 'drift' | 'glare' | 'both' | 'none'
       types: {

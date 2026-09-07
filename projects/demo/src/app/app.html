@@ -30,6 +30,20 @@
   </section>
 
   <section>
+    <h2>Options</h2>
+    <div class="row">
+      <button
+        type="button"
+        class="chip"
+        [class.chip--on]="dismissible()"
+        (click)="dismissible.set(!dismissible())"
+      >
+        dismissible: {{ dismissible() ? 'true' : 'false' }}
+      </button>
+    </div>
+  </section>
+
+  <section>
     <h2>Types</h2>
     <div class="row">
       <button type="button" (click)="success()">success</button>
@@ -37,6 +51,7 @@
       <button type="button" (click)="danger()">danger</button>
       <button type="button" (click)="info()">info</button>
       <button type="button" (click)="custom()">custom (deploy)</button>
+      <button type="button" (click)="noTitle()">no title</button>
     </div>
   </section>
 

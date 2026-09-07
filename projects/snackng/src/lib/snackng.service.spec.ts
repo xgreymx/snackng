@@ -298,16 +298,18 @@ describe('SnackngService', () => {
     expect(toasts()).toHaveLength(1);
   });
 
-  it('renders a close button only when dismissible', () => {
+  it('renders a close button by default and hides it when dismissible is false', () => {
     const { service, tick } = setup({ duration: 0 });
 
-    service.info('sin cerrar');
+    service.info('con cerrar');
     tick();
-    expect(document.querySelector('.sng-close')).toBeNull();
+    const firstToast = toasts()[0];
+    expect(firstToast.querySelector('.sng-close')).not.toBeNull();
 
-    service.info('con cerrar', { dismissible: true });
+    service.info('sin cerrar', { dismissible: false });
     tick();
-    expect(document.querySelectorAll('.sng-close')).toHaveLength(1);
+    const secondToast = toasts()[1];
+    expect(secondToast.querySelector('.sng-close')).toBeNull();
   });
 
   it('announces danger assertively and everything else politely', () => {

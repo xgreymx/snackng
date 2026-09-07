@@ -100,6 +100,7 @@ export class App {
 
   protected readonly position = signal<SnackngPosition>('top-end');
   protected readonly effect = signal<SnackngEffect>('drift');
+  protected readonly dismissible = signal<boolean>(true);
   protected readonly lastReason = signal<string>('—');
   protected readonly prefersReducedMotion = signal(
     matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -147,6 +148,7 @@ export class App {
       position: this.position(),
       style,
       effect: this.effect(),
+      dismissible: this.dismissible(),
     });
   }
 
@@ -155,6 +157,7 @@ export class App {
       title: 'All done',
       position: this.position(),
       effect: this.effect(),
+      dismissible: this.dismissible(),
     });
   }
 
@@ -163,6 +166,7 @@ export class App {
       title: 'Review pending items',
       position: this.position(),
       effect: this.effect(),
+      dismissible: this.dismissible(),
     });
   }
 
@@ -171,6 +175,7 @@ export class App {
       title: 'Something went wrong',
       position: this.position(),
       effect: this.effect(),
+      dismissible: this.dismissible(),
     });
   }
 
@@ -179,6 +184,7 @@ export class App {
       title: 'Scheduled sync',
       position: this.position(),
       effect: this.effect(),
+      dismissible: this.dismissible(),
     });
   }
 
@@ -187,6 +193,15 @@ export class App {
       title: 'Deploy complete',
       position: this.position(),
       effect: this.effect(),
+      dismissible: this.dismissible(),
+    });
+  }
+
+  protected noTitle(): void {
+    this.toast.info('This is a toast message without a title.', {
+      position: this.position(),
+      effect: this.effect(),
+      dismissible: this.dismissible(),
     });
   }
 
@@ -195,17 +210,18 @@ export class App {
       title: 'Item deleted',
       position: this.position(),
       effect: this.effect(),
+      dismissible: this.dismissible(),
       action: { label: 'Undo', handler: () => this.lastReason.set('Undo handler ran') },
     });
     ref.afterDismissed.then((reason) => this.lastReason.set(reason));
   }
 
   protected sticky(): void {
-    this.toast.warning('This toast will not close on its own. Use the X.', {
+    this.toast.warning('This toast will not close on its own.', {
       title: 'Sticky',
       position: this.position(),
       duration: 0,
-      dismissible: true,
+      dismissible: this.dismissible(),
       effect: this.effect(),
     });
   }
@@ -218,6 +234,7 @@ export class App {
         // Shorter than the default so the queue visibly drains during the demo.
         duration: 2000,
         effect: this.effect(),
+        dismissible: this.dismissible(),
       });
     }
   }
