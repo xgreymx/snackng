@@ -77,5 +77,6 @@ dependencies, so the design travels without the framework it grew up in.
   compiled with a version at or below the consuming app's, so a 21 build serves both Angular 21
   and 22 apps while a 22 build would drop every 21 app.
 
-[Unreleased]: https://github.com/fcarrasco/snackng/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/fcarrasco/snackng/releases/tag/v0.1.0
+[Unreleased]: https://github.com/xgreymx/snackng/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/xgreymx/snackng/releases/tag/v1.1.0
+[0.1.0]: https://github.com/xgreymx/snackng/releases/tag/v0.1.0
