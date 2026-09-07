@@ -12,8 +12,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Toasts now glide into the gap left by a dismissed neighbour instead of snapping to their new
   position. Honours `prefers-reduced-motion`.
 
+### Changed
+
+- **Toasts are dismissible by default.** Every toast now renders its close button, because not
+  being able to close one is the more annoying default. Turn it off globally with
+  `provideSnackng({ dismissible: false })`, or per call with `{ dismissible: false }` — the
+  per-call value still wins over the global one either way.
+
+### Added
+
+- `SnackngOverflow` is exported. It was already the declared type of the public
+  `SnackngConfig.overflow`, but could not be imported.
+- Deep documentation under `docs/` — API reference, theming, recipes — linked from the README.
+
 ### Fixed
 
+- **Custom types can be recoloured, as the docs always claimed.** `--snackng-<type>-bg`,
+  `-ink` and `-solid` were read by nothing: a type registered through `provideSnackng`
+  rendered with the `info` surface and no override reached it. A custom type's name is only
+  known at runtime, so the element now points at its own tokens. Types with no tokens set look
+  exactly as before.
 - Bottom-anchored stacks no longer shimmer when a toast is added. The stack now fills the viewport
   height instead of growing upward, so existing toasts keep a stable layout position and their
   `backdrop-filter` is not re-rasterized on every add.

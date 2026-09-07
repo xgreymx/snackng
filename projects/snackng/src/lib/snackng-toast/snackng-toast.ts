@@ -90,6 +90,10 @@ export class SnackngToast implements OnDestroy {
 
   constructor() {
     effect(() => {
+      this.applyCustomTypeColours();
+    });
+
+    effect(() => {
       if (this.item().leaving) {
         this.stopTimer();
         this.scheduleFinalize();
@@ -104,6 +108,34 @@ export class SnackngToast implements OnDestroy {
         this.bindGlare();
       }
     });
+  }
+
+  /**
+   * Points a custom type's surface at its own `--snackng-<type>-*` tokens.
+   *
+   * The built-ins get theirs from a `:host(.sng--success)` rule, but a custom
+   * type's name is only known at runtime, so no stylesheet can name its tokens
+   * — the element has to. Written as properties (not `style=`) so the glare's
+   * inline `--sng-glare-*` writes survive.
+   *
+   * The fallbacks are the neutral surface `:host` already resolves to, so a
+   * type with no tokens set looks exactly as it did before.
+   */
+  private applyCustomTypeColours(): void {
+    const type = this.item().type;
+    // SNACKNG_ICONS is keyed by the built-ins, which own a :host rule already.
+    if (type in SNACKNG_ICONS) {
+      return;
+    }
+    const style = this.element.nativeElement.style;
+    style.setProperty(
+      '--sng-bg',
+      `var(--snackng-${type}-bg, linear-gradient(135deg, ` +
+        `rgb(var(--sng-c1) / var(--sng-tint)), ` +
+        `rgb(var(--sng-c2) / calc(var(--sng-tint) - 0.06))))`,
+    );
+    style.setProperty('--sng-ink', `var(--snackng-${type}-ink, #ffffff)`);
+    style.setProperty('--sng-solid', `var(--snackng-${type}-solid, #47556a)`);
   }
 
   /** Writes the cursor position into CSS vars the glare layer reads. Runs

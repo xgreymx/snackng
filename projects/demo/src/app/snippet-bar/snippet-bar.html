@@ -1,0 +1,36 @@
+<div class="bar" [class.bar--open]="open()">
+  <div class="head">
+    <button type="button" class="toggle" [attr.aria-expanded]="open()" (click)="open.set(!open())">
+      <span class="caret" aria-hidden="true">{{ open() ? '▾' : '▸' }}</span>
+      Your setup
+    </button>
+
+    @if (open()) {
+      <div class="tabs" role="tablist">
+        @for (t of tabs; track t.id) {
+          <button
+            type="button"
+            role="tab"
+            class="tab"
+            [class.tab--on]="tab() === t.id"
+            [attr.aria-selected]="tab() === t.id"
+            (click)="tab.set(t.id)"
+          >
+            {{ t.label }}
+          </button>
+        }
+      </div>
+
+      <button type="button" class="copy" (click)="copy()">
+        {{ copied() ? 'copied' : 'copy' }}
+      </button>
+    } @else {
+      <span class="hint">the code for what you picked</span>
+    }
+  </div>
+
+  @if (open()) {
+    <pre class="code"><code>@for (line of lines(); track $index) {{{ line }}
+}</code></pre>
+  }
+</div>

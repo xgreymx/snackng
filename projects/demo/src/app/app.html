@@ -1,20 +1,33 @@
 <!-- Decorative colour behind everything, so backdrop-filter has something to
-     blur wherever a toast lands. -->
+     blur wherever a toast lands. The grid on top gives the blur an edge to
+     bend — pure gradient blur reads as fog, a refracted line reads as glass. -->
 <div class="backdrop" aria-hidden="true">
   <span class="blob blob--a"></span>
   <span class="blob blob--b"></span>
   <span class="blob blob--c"></span>
   <span class="blob blob--d"></span>
+  <span class="grid"></span>
 </div>
 
 <main>
-  <header>
+  <header class="hero">
+    <p class="eyebrow">Angular 21 · standalone · SSR-safe</p>
     <h1>snackng</h1>
-    <p>Toasts for Angular. No Material, no CDK, no Tailwind.</p>
+    <p class="lede">
+      Glass toasts for Angular. No Material, no CDK, no Tailwind — a service, a call, and CSS
+      variables you already know how to override.
+    </p>
+    <div class="hero-meta">
+      <code class="install">npm i snackng</code>
+      <span class="tag">zero UI deps</span>
+      <span class="tag">CSS-variable theming</span>
+    </div>
   </header>
 
   <section>
-    <h2>Position</h2>
+    <h2>Every toast on this page</h2>
+
+    <h3>Position</h3>
     <div class="row">
       @for (p of positions; track p) {
         <button
@@ -27,6 +40,37 @@
         </button>
       }
     </div>
+
+    <h3>
+      Close button <small>(the <code>dismissible</code> option)</small>
+    </h3>
+    <div class="row">
+      <button
+        type="button"
+        class="chip"
+        [class.chip--on]="dismissible()"
+        [attr.aria-pressed]="dismissible()"
+        (click)="dismissible.set(true)"
+      >
+        dismissible: true
+      </button>
+      <button
+        type="button"
+        class="chip"
+        [class.chip--on]="!dismissible()"
+        [attr.aria-pressed]="!dismissible()"
+        (click)="dismissible.set(false)"
+      >
+        dismissible: false
+      </button>
+    </div>
+    <p class="reason">
+      <code>true</code> is the library default — every toast closes by hand unless you say
+      otherwise. Turn it off for the whole app at bootstrap with
+      <code>provideSnackng(&#123; dismissible: false &#125;)</code>, or per toast with
+      <code>&#123; dismissible: false &#125;</code>, which is what these chips do. The per-call
+      value always wins over the global one, in both directions.
+    </p>
   </section>
 
   <section>
@@ -48,10 +92,12 @@
       toast. On <code>glare</code> / <code>both</code>, hover over the toast.
     </p>
 
-    <h3>Style presets</h3>
+    <h3>Style presets <small>(fires a toast, and keeps the preset selected)</small></h3>
     <div class="row">
       @for (s of styles; track s) {
-        <button type="button" (click)="showStyle(s)">{{ s }}</button>
+        <button type="button" class="chip" [class.chip--on]="style() === s" (click)="showStyle(s)">
+          {{ s }}
+        </button>
       }
     </div>
     <p class="reason">
@@ -110,10 +156,27 @@
       <button type="button" (click)="dismissAll()">dismiss all</button>
     </div>
     <p class="reason">
-      afterDismissed: <code>{{ lastReason() }}</code>
-    </p>
-    <p class="reason">
       Queued waiting for a slot: <code>{{ toast.pending() }}</code>
+    </p>
+
+    <h3>
+      afterDismissed
+      <small>(every toast on this page reports how it ended — newest first)</small>
+    </h3>
+    @if (log().length) {
+      <ul class="log">
+        @for (line of log(); track $index) {
+          <li>{{ line }}</li>
+        }
+      </ul>
+    } @else {
+      <p class="reason">Nothing dismissed yet. Fire a toast.</p>
+    }
+    <p class="reason">
+      <code>afterDismissed</code> is a promise that resolves <em>once</em> per toast with
+      <code>timeout</code>, <code>action</code>, <code>manual</code> or <code>replaced</code>.
+      <code>replaced</code> only happens under <code>overflow: 'dismiss-oldest'</code>, and this
+      page bootstraps <code>'queue'</code> — so you will not see it here.
     </p>
   </section>
 
@@ -153,3 +216,5 @@
 &#125;</code></pre>
   </section>
 </main>
+
+<app-snippet-bar [perCall]="perCallSnippet()" [global]="globalSnippet()" [css]="cssSnippet()" />

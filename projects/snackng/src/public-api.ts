@@ -13,6 +13,7 @@ export type {
   SnackngDismissReason,
   SnackngEffect,
   SnackngOptions,
+  SnackngOverflow,
   SnackngPoliteness,
   SnackngPosition,
   SnackngRef,

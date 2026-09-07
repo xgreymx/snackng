@@ -1,171 +1,386 @@
+/* The demo page is built out of the same material as the library: translucent
+   panels, a gloss highlight along the top edge, a layered shadow. If the page
+   itself does not read as glass, the toasts have nothing to belong to. */
 :host {
+  --ink: #f2f6fc; /* headings, values, anything you must read */
+  --ink-dim: #c2cfe0; /* body copy — on glass, not on the raw background */
+  --ink-faint: #93a3ba; /* the smallest, least important labels only */
+  --accent: #7fc4ff;
+  --accent-deep: #2f6bd8;
+
+  --panel-line: rgba(255, 255, 255, 0.12);
+  /* Two layers, first on top: the gloss pooling at the top edge, then the tint.
+     Same read as the toast surface, without a pseudo-element to stack. */
+  --panel-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 45%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.062), rgba(255, 255, 255, 0.022));
+  --panel-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.05), 0 24px 50px -28px rgba(2, 8, 26, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+
   display: block;
   min-height: 100vh;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: #090e1c;
+  color: var(--ink-dim);
   font-family: 'Manrope', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 main {
-  max-width: 860px;
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 48px 24px 96px;
+  padding: 72px 24px 160px; /* room for the docked snippet bar */
 }
 
-header {
-  margin-bottom: 40px;
+/* ── Hero ─────────────────────────────────────────────────────────────── */
+
+.hero {
+  margin-bottom: 56px;
+}
+
+.eyebrow {
+  margin: 0 0 18px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 h1 {
   margin: 0;
-  font-size: 40px;
+  font-size: clamp(52px, 9vw, 88px);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  color: var(--ink);
 }
 
-header p {
-  margin: 8px 0 0;
-  color: #94a3b8;
+.lede {
+  max-width: 60ch;
+  margin: 18px 0 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-dim);
 }
 
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.install {
+  padding: 9px 16px;
+  border: 1px solid var(--panel-line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.install::before {
+  content: '$ ';
+  color: var(--accent);
+}
+
+.tag {
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  color: var(--ink-dim);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* ── Panels ───────────────────────────────────────────────────────────── */
+
+/* Kept deliberately translucent: a toast docked over one still blurs the blob
+   behind it, so the library's glass never flattens against a solid card. */
 section {
-  margin-bottom: 32px;
+  position: relative;
+  margin-bottom: 18px;
+  padding: 26px 28px 30px;
+  border: 1px solid var(--panel-line);
+  border-radius: 20px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  box-shadow: var(--panel-shadow);
 }
 
 h2 {
-  margin: 0 0 12px;
-  font-size: 13px;
-  font-weight: 700;
+  margin: 0 0 16px;
+  font-size: 12px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #64748b;
+  letter-spacing: 0.12em;
+  color: var(--accent);
 }
 
 h3 {
-  margin: 20px 0 10px;
-  font-size: 13px;
+  margin: 24px 0 10px;
+  font-size: 14px;
   font-weight: 700;
-  color: #cbd5e1;
+  color: var(--ink);
+}
+
+h3:first-of-type {
+  margin-top: 0;
 }
 
 h3 small {
-  color: #64748b;
+  color: var(--ink-faint);
+  font-weight: 500;
+  font-size: 13px;
+}
+
+section p {
+  color: var(--ink-dim);
+  line-height: 1.65;
+}
+
+section > p:first-of-type {
+  margin-top: 0;
+}
+
+.reason {
+  margin: 14px 0 0;
+  color: var(--ink-dim);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.log {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(4, 9, 22, 0.5);
+  list-style: none;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--ink-dim);
+}
+
+.log li:first-child {
+  color: var(--ink);
+}
+
+/* ── Controls ─────────────────────────────────────────────────────────── */
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+button {
+  padding: 10px 17px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 11px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045));
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 8px 16px -12px rgba(0, 0, 0, 0.9);
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.14s ease;
+}
+
+button:hover {
+  border-color: rgba(255, 255, 255, 0.26);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.chip {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
   font-weight: 500;
 }
 
+.chip--on {
+  border-color: rgba(127, 196, 255, 0.55);
+  background: linear-gradient(180deg, #3f7ce4, var(--accent-deep));
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 8px 20px -10px rgba(47, 107, 216, 0.8);
+}
+
+.chip--on:hover {
+  border-color: rgba(127, 196, 255, 0.75);
+  background: linear-gradient(180deg, #4d88ec, #3573de);
+}
+
+/* ── Sliders ──────────────────────────────────────────────────────────── */
+
 .sliders {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .slider {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--ink-dim);
 }
 
 .slider-label b {
-  color: #e2e8f0;
+  color: var(--ink);
   font-weight: 700;
 }
 
+/* `accent-color` hands the whole widget to the browser's native look — the
+   generic blue that vanishes against the blobs. Painted by hand instead, out of
+   the same material as the panels. Angular scopes these pseudo-elements through
+   the attribute on the <input>, so no ::ng-deep. */
 .slider input[type='range'] {
   width: 100%;
-  accent-color: #295ec0;
-}
-
-.slider code {
-  font-size: 11px;
-  color: #64748b;
+  height: 20px;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
   background: none;
-  padding: 0;
-}
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-button {
-  padding: 9px 16px;
-  border: 1px solid #334155;
-  border-radius: 10px;
-  background: #1e293b;
-  color: #e2e8f0;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
   cursor: pointer;
 }
 
-button:hover {
-  background: #334155;
+.slider input[type='range']::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
 }
 
-.chip {
-  font-weight: 500;
-  font-family: ui-monospace, monospace;
-  font-size: 13px;
+.slider input[type='range']::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
 }
 
-.chip--on {
-  border-color: #295ec0;
-  background: #295ec0;
-  color: #fff;
+/* The thumb is the piece that has to read as glass. */
+.slider input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px; /* centres it on a 6px track; webkit only */
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(196, 216, 245, 0.72));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 8px -1px rgba(2, 8, 26, 0.9);
+  transition: transform 0.14s ease;
 }
 
-.reason {
-  margin: 12px 0 0;
-  color: #94a3b8;
-  font-size: 14px;
+.slider input[type='range']::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(196, 216, 245, 0.72));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 8px -1px rgba(2, 8, 26, 0.9);
 }
+
+.slider input[type='range']:hover::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+/* Dropping `accent-color` also dropped the native focus ring; same outline the
+   buttons use, on the thumb where the eye already is. */
+.slider input[type='range']:focus-visible {
+  outline: none;
+}
+
+.slider input[type='range']:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.slider input[type='range']:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.slider code {
+  padding: 0;
+  background: none;
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+/* ── Code ─────────────────────────────────────────────────────────────── */
 
 code {
-  padding: 2px 6px;
-  border-radius: 5px;
-  background: #1e293b;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
   font-family: ui-monospace, monospace;
   font-size: 13px;
-}
-
-section p {
-  color: #94a3b8;
-  line-height: 1.6;
 }
 
 pre {
   margin: 0;
-  padding: 16px;
-  border: 1px solid #1e293b;
-  border-radius: 10px;
-  background: #0b1220;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(4, 9, 22, 0.55);
   overflow-x: auto;
 }
 
 pre code {
   padding: 0;
   background: none;
-  color: #cbd5e1;
-  line-height: 1.6;
+  color: var(--ink-dim);
+  line-height: 1.65;
 }
 
+/* ── Backdrop ─────────────────────────────────────────────────────────── */
+
 /* Colour behind the whole page: backdrop-filter needs something to blur, so a
-   toast docked at any corner has texture underneath it. */
+   toast docked at any corner has texture underneath it. The blobs stay in the
+   corners for that reason — that is where the stacks dock. */
 .backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-}
-
-main {
-  position: relative;
-  z-index: 1;
 }
 
 .blob {
@@ -175,6 +390,17 @@ main {
   border-radius: 50%;
   filter: blur(70px);
   opacity: 0.5;
+  /* Separate `animation-name`, never the shorthand: Angular rewrites @keyframes
+     names for view encapsulation and only patches the literal property to
+     match — a name inside the shorthand points at keyframes that no longer
+     exist and the animation silently dies. Same trap as the library's drift. */
+  animation-name: blob-wander;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  /* Far slower than --snackng-drift-duration (4s): the page must not compete
+     with the sheen moving across a toast. */
+  animation-duration: 34s;
 }
 
 .blob--a {
@@ -186,14 +412,57 @@ main {
   top: -10vw;
   right: -6vw;
   background: #db2777;
+  animation-duration: 41s;
+  animation-delay: -12s;
 }
 .blob--c {
   bottom: -14vw;
   left: 12vw;
   background: #0ea5e9;
+  animation-duration: 38s;
+  animation-delay: -7s;
 }
 .blob--d {
   bottom: -10vw;
   right: -8vw;
   background: #059669;
+  animation-duration: 46s;
+  animation-delay: -21s;
+}
+
+@keyframes blob-wander {
+  from {
+    transform: translate(-3%, -2%) scale(1);
+  }
+  to {
+    transform: translate(4%, 5%) scale(1.14);
+  }
+}
+
+/* A blurred gradient alone reads as fog. A straight line bending behind the
+   glass reads as refraction — this is what makes the panels look like material
+   rather than like a low-opacity rectangle. */
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 58px 58px;
+  -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 38%, #000 15%, transparent 78%);
+  mask-image: radial-gradient(ellipse 85% 65% at 50% 38%, #000 15%, transparent 78%);
+}
+
+/* The Animation section claims the library respects this setting. The page has
+   to keep the same promise. */
+@media (prefers-reduced-motion: reduce) {
+  .blob {
+    animation-name: none;
+  }
+  button {
+    transition: none;
+  }
+  button:hover {
+    transform: none;
+  }
 }

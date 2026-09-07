@@ -44,9 +44,12 @@ this.toast.warning('3 records left unreconciled.');
 this.toast.danger('Could not reach the server.');
 this.toast.info('Next sync at 18:00.');
 
-// A title, a longer life, a close button.
-this.toast.info('Import running…', { title: 'In progress', duration: 0, dismissible: true });
+// A title and a longer life. The close button is already there.
+this.toast.info('Import running…', { title: 'In progress', duration: 0 });
 //                                            duration: 0 means "stay until dismissed"
+
+// Unless you don't want it.
+this.toast.success('Saved.', { dismissible: false });
 
 // An action button, and knowing how it ended.
 const ref = this.toast.success('Movement deleted.', {
@@ -108,9 +111,23 @@ const ref = toast.success('Item deleted', {
   action: { label: 'Undo', handler: () => restore() },
 });
 
-ref.afterDismissed.then((reason) => console.log(reason)); // 'timeout' | 'action' | 'manual' | 'replaced'
-ref.dismiss();
+ref.id; // 'sng-4'
+ref.dismiss(); // close it yourself; resolves with 'manual'
+ref.afterDismissed.then((reason) => console.log(reason));
 ```
+
+`afterDismissed` is a **promise, so it resolves once, for that one toast, and never fires
+again** — it is not a stream. It settles after the exit animation, with one of four reasons:
+
+| Reason       | When                                                            |
+| ------------ | --------------------------------------------------------------- |
+| `'timeout'`  | `duration` elapsed. Never with `duration: 0`.                   |
+| `'action'`   | The action button was clicked (unless `dismissOnClick: false`). |
+| `'manual'`   | The close button, `ref.dismiss()`, or `dismissAll()`.           |
+| `'replaced'` | Evicted under `overflow: 'dismiss-oldest'`.                     |
+
+To react to _every_ toast, attach it where you create them rather than keeping one ref —
+[full details and edge cases](https://github.com/xgreymx/snackng/blob/main/projects/snackng/docs/api.md#afterdismissed).
 
 ### Options
 
@@ -120,7 +137,7 @@ ref.dismiss();
 | `duration`    | `number`                               | `5000`      | ms before auto-dismiss; `0` keeps it open |
 | `action`      | `{ label, handler?, dismissOnClick? }` | —           | Snackbar-style button                     |
 | `position`    | `SnackngPosition`                      | `'top-end'` | `top`/`bottom` × `start`/`center`/`end`   |
-| `dismissible` | `boolean`                              | `false`     | Show the close button                     |
+| `dismissible` | `boolean`                              | `true`      | Close button; `false` hides it            |
 | `politeness`  | `'polite' \| 'assertive' \| 'off'`     | by type     | Screen-reader urgency                     |
 | `style`       | `SnackngStyle`                         | `'glass'`   | Glass preset — see below                  |
 | `effect`      | `SnackngEffect`                        | `'drift'`   | Surface light effect — see below          |
@@ -146,8 +163,11 @@ provideSnackng({ style: 'solid' }); // global default for every toast
 | `'frosted'`           | Heavy blur, high tint — classic frosted glass                                    |
 | `'flat'`              | Fully opaque, no blur — flat design, and the cleanest `backdrop-filter` fallback |
 
-Define your own by dropping a `.sng-style--<name>` rule in your CSS (setting `--sng-p-*`
-private aliases) and passing `{ style: '<name>' }`.
+Define your own with a `.sng-style--<name>` rule setting the five private aliases —
+`--sng-p-tint`, `--sng-p-blur`, `--sng-p-spec`, `--sng-p-spec-size`, `--sng-p-drift-dur` — and
+pass `{ style: '<name>' }`. **The rule has to be global**; under Angular's default emulated
+encapsulation it silently does nothing. Same goes for `panelClass`.
+[Example and preset values](https://github.com/xgreymx/snackng/blob/main/projects/snackng/docs/theming.md#writing-your-own-preset).
 
 `effect` adds subtle motion/light to the glass surface — it never touches the enter/exit
 animations:
@@ -160,6 +180,8 @@ animations:
 | `'none'`              | Static glass, no light motion                       |
 
 Both `drift` and the drift half of `both` stop under `prefers-reduced-motion: reduce`.
+`'glare'` needs a pointer, so it is inert on touch — use `'both'` if touch users should still
+get the drift.
 
 ### Global defaults
 
@@ -176,8 +198,8 @@ bootstrapApplication(App, {
       max: 5, // visible at once
       overflow: 'queue', // 'queue' | 'dismiss-oldest'
       stagger: 90, // ms between releases; 0 = all at once
-      pauseOnHover: true,
-      dismissible: false,
+      pauseOnHover: true, // also pauses on keyboard focus
+      dismissible: true, // close button on every toast; false hides them all
       style: 'glass', // default glass preset for every toast
       effect: 'drift', // 'drift' | 'glare' | 'both' | 'none'
       types: {
@@ -201,7 +223,10 @@ The trade-off is honest: a flood of 50 errors becomes a long parade. If you'd ra
 always win, `overflow: 'dismiss-oldest'` evicts the oldest visible toast to make room, and those
 resolve `afterDismissed` with `'replaced'`.
 
-Custom types get the base surface and are coloured through CSS variables:
+### Custom types
+
+Register one through `provideSnackng`, then emit it with `show`. It starts from the neutral
+surface and is recoloured through its own variables:
 
 ```ts
 toast.show('deploy', 'Version 2.4.0 is now live in production.');
@@ -211,6 +236,7 @@ toast.show('deploy', 'Version 2.4.0 is now live in production.');
 :root {
   --snackng-deploy-bg: linear-gradient(135deg, #7c3aed, #4c1d95);
   --snackng-deploy-ink: #ffffff;
+  --snackng-deploy-solid: #6d28d9; /* where backdrop-filter is unsupported */
 }
 ```
 
@@ -243,7 +269,10 @@ variables anywhere they inherit to the toast (`:root` is simplest).
 | `--snackng-brightness`                                 | `1.06`                                                 |
 | `--snackng-gloss`                                      | `0.22` — static highlight strength                     |
 | `--snackng-spec-strength` / `--snackng-spec-size`      | `0.15` / `30%` — drift & glare reflection              |
-| `--snackng-drift-duration`                             | `4s`                                                   |
+| `--snackng-drift-duration`                             | `4s` — only affects `drift` / `both`                   |
+| `--snackng-blur-reduced`                               | `10px` — under `prefers-reduced-motion`                |
+| `--snackng-shift`                                      | `28px` — enter/exit travel; `0` under reduced motion   |
+| `--snackng-action-size` / `--snackng-action-weight`    | `13px` / `600`                                         |
 | `--snackng-border`                                     | `1px solid rgba(255,255,255,.22)`                      |
 | `--snackng-shadow`                                     | layered drop + inner highlight                         |
 | `--snackng-min-width` / `--snackng-max-width`          | `340px` / `460px`                                      |
@@ -259,6 +288,12 @@ variables anywhere they inherit to the toast (`:root` is simplest).
 
 `{type}` is `success`, `warning`, `danger`, `info`, or any custom type you register.
 
+Your `:root` values beat presets, which beat the library defaults — the library never declares
+a public token on the toast itself, precisely so your override wins. Note that replacing
+`--snackng-{type}-bg` with a flat gradient disconnects `--snackng-tint` for that type, and that
+`-solid` is only used where `backdrop-filter` is unsupported.
+[Every variable, with the reasoning](https://github.com/xgreymx/snackng/blob/main/projects/snackng/docs/theming.md).
+
 ### Using daisyUI?
 
 snackng does **not** depend on daisyUI or Tailwind. If you happen to use them, one optional import
@@ -268,9 +303,12 @@ re-points the toast at your daisy theme, so it follows theme switching and dark 
 @import 'snackng/themes/daisy.css';
 ```
 
-That maps `--snackng-*` onto daisyUI's `--color-success`, `--color-error-content`, `--radius-box`
-and friends. It trades the glass gradients for daisy's flat theme colours — if you want to keep
-the glass and only borrow the hues, skip the import and set the variables yourself.
+That maps the twelve colour variables plus `--snackng-radius` and `--snackng-font` onto daisyUI
+semantics (note `danger` → `--color-error`). It trades the glass gradients for daisy's flat theme
+colours — to keep the glass and only borrow the hues, skip the import and set the variables
+yourself. Two gotchas: `--snackng-font: inherit` drops Manrope, and the bridge declares on
+`:root`, so a `data-theme` set on a subtree rather than `<html>` will not reach the toasts.
+[Full mapping](https://github.com/xgreymx/snackng/blob/main/projects/snackng/docs/theming.md#using-daisyui).
 
 ## Accessibility
 
@@ -281,6 +319,17 @@ the glass and only borrow the hues, skip the import and set the variables yourse
 - Under `prefers-reduced-motion: reduce` the slide becomes a plain fade and the blur eases off.
   The library never overrides that OS setting on your behalf.
 - Timers pause on hover **and** on keyboard focus, so a toast can't vanish mid-read.
+
+## Documentation
+
+This README is the tour. The details live next to the source:
+
+- **[API reference](https://github.com/xgreymx/snackng/blob/main/projects/snackng/docs/api.md)** — every export, every option, `SnackngRef` and
+  `afterDismissed`, the precedence rules, SSR behaviour.
+- **[Theming](https://github.com/xgreymx/snackng/blob/main/projects/snackng/docs/theming.md)** — all 40-odd CSS variables with defaults, the cascade,
+  writing your own preset, the daisyUI bridge.
+- **[Recipes](https://github.com/xgreymx/snackng/blob/main/projects/snackng/docs/recipes.md)** — HTTP interceptor, undo, custom types, wrapping the
+  service, accessibility notes.
 
 ## License
 

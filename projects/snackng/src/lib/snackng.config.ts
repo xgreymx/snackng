@@ -26,6 +26,7 @@ export interface SnackngConfig {
    */
   stagger: number;
   pauseOnHover: boolean;
+  /** Show the close button. Overridable per call via `options.dismissible`. */
   dismissible: boolean;
   /** Default glass preset for every toast. Overridable per call via `options.style`. */
   style: SnackngStyle;
@@ -41,7 +42,7 @@ export const SNACKNG_DEFAULTS: SnackngConfig = {
   overflow: 'queue',
   stagger: 90,
   pauseOnHover: true,
-  dismissible: false,
+  dismissible: true,
   style: 'glass',
   effect: 'drift',
   types: {},

@@ -298,13 +298,30 @@ describe('SnackngService', () => {
     expect(toasts()).toHaveLength(1);
   });
 
-  it('renders a close button only when dismissible', () => {
+  it('renders a close button by default, and hides it on `dismissible: false`', () => {
     const { service, tick } = setup({ duration: 0 });
+
+    service.info('con cerrar');
+    tick();
+    expect(document.querySelectorAll('.sng-close')).toHaveLength(1);
+
+    service.info('sin cerrar', { dismissible: false });
+    tick();
+    // DOM order is insertion order: the second toast is the one that opted out.
+    const items = document.querySelectorAll('sng-toast');
+    expect(items).toHaveLength(2);
+    expect(items[0].querySelector('.sng-close')).not.toBeNull();
+    expect(items[1].querySelector('.sng-close')).toBeNull();
+  });
+
+  it('lets provideSnackng turn the close button off globally, and a call turn it back on', () => {
+    const { service, tick } = setup({ duration: 0, dismissible: false });
 
     service.info('sin cerrar');
     tick();
     expect(document.querySelector('.sng-close')).toBeNull();
 
+    // Nullish merge, not `||`: an explicit per-call value wins either way.
     service.info('con cerrar', { dismissible: true });
     tick();
     expect(document.querySelectorAll('.sng-close')).toHaveLength(1);
@@ -348,6 +365,31 @@ describe('SnackngService', () => {
 
     expect(toasts()[0].classList.contains('sng--deploy')).toBe(true);
     expect(document.querySelector('#deploy-icon')).not.toBeNull();
+  });
+
+  it('points a custom type at its own --snackng-<type>-* tokens', () => {
+    const { service, tick } = setup({ duration: 0, types: { deploy: {} } });
+
+    service.show('deploy', 'desplegado');
+    tick();
+
+    // No stylesheet can name a type only known at runtime, so the element
+    // carries the reference. jsdom does not resolve var(), but it does hand
+    // back the declaration we wrote.
+    const surface = toasts()[0].style.getPropertyValue('--sng-bg');
+    expect(surface).toContain('--snackng-deploy-bg');
+    expect(toasts()[0].style.getPropertyValue('--sng-ink')).toContain('--snackng-deploy-ink');
+    expect(toasts()[0].style.getPropertyValue('--sng-solid')).toContain('--snackng-deploy-solid');
+  });
+
+  it('leaves built-in types to their stylesheet rule, with nothing inline', () => {
+    const { service, tick } = setup({ duration: 0 });
+
+    service.success('ok');
+    tick();
+
+    expect(toasts()[0].style.getPropertyValue('--sng-bg')).toBe('');
+    expect(toasts()[0].style.getPropertyValue('--sng-ink')).toBe('');
   });
 
   it('falls back to the info glyph for a custom type with no icon', () => {

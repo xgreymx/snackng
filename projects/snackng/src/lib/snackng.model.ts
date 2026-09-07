@@ -33,9 +33,10 @@ export interface SnackngAction {
 }
 
 /**
- * Definition for a custom type. Built-in types already have icon and colors;
- * a custom type inherits the neutral surface and is styled through
- * `--snackng-<type>-bg` / `--snackng-<type>-ink`.
+ * Definition for a custom type. Built-in types already have icon and colours;
+ * a custom type starts from the neutral surface and is recoloured through
+ * `--snackng-<type>-bg`, `--snackng-<type>-ink` and `--snackng-<type>-solid`,
+ * set anywhere they inherit to the toast (`:root` is simplest).
  */
 export interface SnackngTypeDef {
   /**
